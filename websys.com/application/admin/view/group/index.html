@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<body>
+    <!-- 右侧内容框架，更改从这里开始 -->
+    <fieldset class="layui-elem-field layui-field-title site-title">
+      <legend><a name="default">权限管理</a></legend>
+    </fieldset>
+    <!-- 右侧内容框架，更改从这里开始 -->
+    <table class="layui-table">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>名称</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            {volist name="lists" id="vo"}
+            <tr>
+                <td>{$vo.id}</td>
+                <td>{$vo.name}</td>
+                <td>{$vo.description}</td>
+            </tr>
+            {/volist} 
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+    <script src="jquery.js" type="text/javascript" charset="utf-8"></script>
+<body>
+            <!-- 右侧内容框架，更改从这里开始 -->
+<button class="layui-btn" onclick="member_add('添加用户','member_add','600','350')"><i class="layui-icon">&#xe608;</i>添加</button>
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th>编号</th>
+                        <th>姓名</th>
+                        <th>角色</th>
+                        <th>
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+                <tbody color="white" id="tableInfo">
+                    {volist name="lists" id="vo"}
+                    <tr>
+                        <td>{$vo.i}</td>
+                        <td>{$vo.username}</td>
+                        <td>{$vo.role}</td>
+                        <td>
+                         <a title="编辑" href="javascript:;" onclick="member_edit('编辑用户',this,'member_edit','500','280','{$vo.username}','{$vo.role}','{$vo.id}','{$vo.group_id}')"
+                            class="ml-5" style="text-decoration:none">
+                                <i class="layui-icon">&#xe642;</i>
+                            </a>    
+                        <a title="删除" href="javascript:;" onclick="member_del(this,'{$vo.username}','{$vo.group_id}','{$vo.id}')" 
+                            style="text-decoration:none">
+                                <i class="layui-icon">&#xe640;</i>
+                            </a>
+                        </td>
+                    </tr>
+                    {/volist} 
+                </tbody>
+            </table>
+            <a onclick="firstPage()">首页</a>
+            <a onclick="prevPage()">上一页</a>
+            <a onclick="pnextPage()">下一页</a>
+            <a onclick="lastPage()">尾页</a>
+          <span id="numPage"></span>
+          
+        <!-- 右侧主体结束 -->
+     <script>
+     
+        var tableInfo = document.getElementById("tableInfo");  // 获取table中的内容
+        var totalRow = tableInfo.rows.length;  // 获取table行数
+        
+        //var cells = departmentsInfo.rows[0].cells.length;  // 获取列数
+        var pagesize = 15;   // 每页两条
+        var totalPage = Math.ceil(totalRow/pagesize);  // 计算出总页数=总条数/每页条数
+        var currentPage;   // 当前页
+        var startRow;
+        var lastRow;
+
+        // 定义一个换页的函数
+        function pagination(i){
+          currentPage = i;
+          startRow = (currentPage-1)*pagesize;  //每页显示第一条数据的行数
+          lastRow = currentPage*pagesize;  // 每页显示的最后一条数据的行数
+          document.getElementById("numPage").innerHTML="第"+currentPage+"页";
+    
+          if(lastRow>totalRow){
+               lastRow=totalRow;// 如果最后一页的最后一条数据显示的行数大于总条数，就让最后一条的行数等于总条数
+          }
+          //将数据遍历出来
+          for(var i=0; i<totalRow; i++){
+            var hrow = tableInfo.rows[i];
+            if( i>=startRow && i<lastRow ){
+              hrow.style.display="table-row";   // 将循环出来的每一行信息作为一个tr显示到页面
+            }else{
+              hrow.style.display="none";
+            }
+          }
+        }
+    
+        $(function(){ firstPage(); });
+        
+        function firstPage(){
+          var i = 1;
+          pagination(i);
+        }
+        function prevPage(){
+          var i= currentPage-1;
+          if(i<1) i=currentPage;
+          pagination(i);
+        }
+        function pnextPage(){
+          var i= currentPage+1;
+          if(i>totalPage) i= currentPage;
+          pagination(i);
+        }
+        function lastPage(){
+          var i = totalPage;
+          pagination(i);
+        }
+        /*用户-编辑*/
+        function member_edit(title,obj,url,w,h,username,role,uid,group_id){
+            xadmin.open(title,url+'?id='+uid+'&username='+username+'&role='+role+'&group_id='+group_id,w,h);
+        }
+    /*用户-删除*/
+        function member_del(obj,username,group_id,uid){
+            if(group_id==1) layer.msg('该条数据无法删除!',{time:1000});
+            else
+            layer.confirm('确认要删除吗？',function(index){
+                    //发异步删除数据
+                    $.get("{:url('member_del')}",{username:username,uid:uid});
+                    
+                    $(obj).parents("tr").remove();
+                    layer.msg('已删除!',{icon:1,time:1000});
+                    
+                });
+        }
+        function member_add(title,url,w,h){
+            xadmin.open(title,url,w,h);
+        }
+    </script>
+</body>
+</html>
