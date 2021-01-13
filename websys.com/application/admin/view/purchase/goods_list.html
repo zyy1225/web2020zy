@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+    <script src="jquery.js" type="text/javascript" charset="utf-8"></script>
+<body>
+            <!-- 右侧内容框架，更改从这里开始 -->
+    <fieldset class="layui-elem-field layui-field-title site-title">
+      <legend><a name="default">买家信息</a></legend>
+    </fieldset>
+    <table class="layui-table">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>商品名称</th>
+                <th>商品数目</th>
+                <th>剩余数量</th>
+                <th>商品描述</th>
+            </tr>
+        </thead>
+        <tbody id="tableInfo">
+            {volist name="lists" id="vo"}
+            <tr>
+                <td>{$vo.id}</td>
+                <td>{$vo.name}</td>
+                <td>{$vo.num}</td>
+                <td>{$vo.rest_num}</td>
+                <td>{$vo.description}</td>
+            </tr>
+            {/volist} 
+        </tbody>
+    </table>
+    <a onclick="firstPage()">首页</a>
+    <a onclick="prevPage()">上一页</a>
+    <a onclick="pnextPage()">下一页</a>
+    <a onclick="lastPage()">尾页</a>
+  <span id="numPage"></span>
+    <!-- 右侧主体结束 -->
+     <script>
+        //分页效果
+        var tableInfo = document.getElementById("tableInfo");  // 获取table中的内容
+        var totalRow = tableInfo.rows.length;  // 获取table行数
+        
+        //var cells = departmentsInfo.rows[0].cells.length;  // 获取列数
+        var pagesize = 15;   // 每页两条
+        var totalPage = Math.ceil(totalRow/pagesize);  // 计算出总页数=总条数/每页条数
+        var currentPage;   // 当前页
+        var startRow;
+        var lastRow;
+
+        // 定义一个换页的函数
+        function pagination(i){
+          currentPage = i;
+          startRow = (currentPage-1)*pagesize;  //每页显示第一条数据的行数
+          lastRow = currentPage*pagesize;  // 每页显示的最后一条数据的行数
+          document.getElementById("numPage").innerHTML="第"+currentPage+"页";
+    
+          if(lastRow>totalRow){
+               lastRow=totalRow;// 如果最后一页的最后一条数据显示的行数大于总条数，就让最后一条的行数等于总条数
+          }
+          //将数据遍历出来
+          for(var i=0; i<totalRow; i++){
+            var hrow = tableInfo.rows[i];
+            if( i>=startRow && i<lastRow ){
+              hrow.style.display="table-row";   // 将循环出来的每一行信息作为一个tr显示到页面
+            }else{
+              hrow.style.display="none";
+            }
+          }
+        }
+    
+        $(function(){ firstPage(); });
+        
+        function firstPage(){
+          var i = 1;
+          pagination(i);
+        }
+        function prevPage(){
+          var i= currentPage-1;
+          if(i<1) i=currentPage;
+          pagination(i);
+        }
+        function pnextPage(){
+          var i= currentPage+1;
+          if(i>totalPage) i= currentPage;
+          pagination(i);
+        }
+        function lastPage(){
+          var i = totalPage;
+          pagination(i);
+        }
+        ///////////分页效果结束///////////////
+
+        </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+    <script src="jquery.js" type="text/javascript" charset="utf-8"></script>
+<body>
+            <!-- 右侧内容框架，更改从这里开始 -->
+    <fieldset class="layui-elem-field layui-field-title site-title">
+      <legend><a name="default">买家信息</a></legend>
+    </fieldset>
+    <table class="layui-table">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>购买数量</th>
+                <th>购买者名称</th>
+                <th>联系方式</th>
+                <th>地址</th>
+                <th>备注</th>
+                <th>
+                    操作
+                </th>
+            </tr>
+        </thead>
+        <tbody id="tableInfo">
+            {volist name="lists" id="vo"}
+            <tr>
+                <td>{$vo.id}</td>
+                <td>{$vo.num}</td>
+                <td>{$vo.username}</td>
+                <td>{$vo.phonenumber}</td>
+                <td>{$vo.address}</td>
+                <td>{$vo.remark}</td>
+                <td>
+                <a title="编辑" href="javascript:;" onclick="purchase_edit('编辑买家信息',this,'purchase_edit','500','480','{$vo.id}','{$vo.num}','{$vo.username}','{$vo.phonenumber}','{$vo.address}','{$vo.remark}')"
+                    class="ml-5" style="text-decoration:none">
+                        <i class="layui-icon">&#xe642;</i>
+                </a>    
+                    
+                <a title="删除" href="javascript:;" onclick="purchase_del(this,'{$vo.username}','{$vo.id}')" 
+                    style="text-decoration:none">
+                        <i class="layui-icon">&#xe640;</i>
+                    </a>
+                </td>
+            </tr>
+            {/volist} 
+        </tbody>
+    </table>
+    <a onclick="firstPage()">首页</a>
+    <a onclick="prevPage()">上一页</a>
+    <a onclick="pnextPage()">下一页</a>
+    <a onclick="lastPage()">尾页</a>
+  <span id="numPage"></span>
+    <!-- 右侧主体结束 -->
+     <script>
+        //分页效果
+        var tableInfo = document.getElementById("tableInfo");  // 获取table中的内容
+        var totalRow = tableInfo.rows.length;  // 获取table行数
+        
+        //var cells = departmentsInfo.rows[0].cells.length;  // 获取列数
+        var pagesize = 15;   // 每页两条
+        var totalPage = Math.ceil(totalRow/pagesize);  // 计算出总页数=总条数/每页条数
+        var currentPage;   // 当前页
+        var startRow;
+        var lastRow;
+
+        // 定义一个换页的函数
+        function pagination(i){
+          currentPage = i;
+          startRow = (currentPage-1)*pagesize;  //每页显示第一条数据的行数
+          lastRow = currentPage*pagesize;  // 每页显示的最后一条数据的行数
+          document.getElementById("numPage").innerHTML="第"+currentPage+"页";
+    
+          if(lastRow>totalRow){
+               lastRow=totalRow;// 如果最后一页的最后一条数据显示的行数大于总条数，就让最后一条的行数等于总条数
+          }
+          //将数据遍历出来
+          for(var i=0; i<totalRow; i++){
+            var hrow = tableInfo.rows[i];
+            if( i>=startRow && i<lastRow ){
+              hrow.style.display="table-row";   // 将循环出来的每一行信息作为一个tr显示到页面
+            }else{
+              hrow.style.display="none";
+            }
+          }
+        }
+    
+        $(function(){ firstPage(); });
+        
+        function firstPage(){
+          var i = 1;
+          pagination(i);
+        }
+        function prevPage(){
+          var i= currentPage-1;
+          if(i<1) i=currentPage;
+          pagination(i);
+        }
+        function pnextPage(){
+          var i= currentPage+1;
+          if(i>totalPage) i= currentPage;
+          pagination(i);
+        }
+        function lastPage(){
+          var i = totalPage;
+          pagination(i);
+        }
+        ///////////分页效果结束///////////////
+        /*买家-修改*/
+        /*用户-编辑*/
+        function purchase_edit(title,obj,url,w,h,id,num,username,phonenumber,address,remark){
+            xadmin.open(title,url+'?id='+id+'&num='+num+'&username='+username+'&phonenumber='+phonenumber+'&address='+address+'&remark='+remark,w,h);
+        }
+        /*买家-删除*/
+        function purchase_del(obj,username,uid){
+            layer.confirm('确认要删除吗？',function(index){
+                    //发异步删除数据
+                    $.get("{:url('purchase_del')}",{username:username,uid:uid});
+                    
+                    $(obj).parents("tr").remove();
+                    layer.msg('已删除!',{icon:1,time:1000});
+                    
+                });
+        }
+        </script>
+</body>
+</html>
